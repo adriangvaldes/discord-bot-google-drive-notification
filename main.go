@@ -10,19 +10,22 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/drive/v3"
 )
 
 const (
-	discordToken      = "MTI0OTA3NDY3ODA5MDMwMTU0Mg.GFdxy_.hbPQ9tOmW2TD4W1VfrEpq6G2FUZYBFLf1E1Mog"
-	discordChannelID  = "1230687636340080640"
 	googleCredentials = "./google-drive-credentials.json"
-	fileID            = "1-C8KRfua1gqy-wj81e9oTyeWmzYO6oS3"
 )
 
 func main() {
+	godotenv.Load(".env")
+	discordToken := os.Getenv("DISCORD_TOKEN")
+	// discordChannelID := os.Getenv("DISCORD_CHANNEL_ID")
+	fileID := os.Getenv("GOOGLE_DRIVE_FILE_ID")
+
 	// Start Discord bot
 	dg, err := discordgo.New("Bot " + discordToken)
 	if err != nil {
