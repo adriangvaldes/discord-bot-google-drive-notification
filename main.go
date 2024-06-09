@@ -14,6 +14,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/drive/v3"
+	"google.golang.org/api/option"
 )
 
 const (
@@ -23,7 +24,7 @@ const (
 func main() {
 	godotenv.Load(".env")
 	discordToken := os.Getenv("DISCORD_TOKEN")
-	// discordChannelID := os.Getenv("DISCORD_CHANNEL_ID")
+	discordChannelID := os.Getenv("DISCORD_CHANNEL_ID")
 	fileID := os.Getenv("GOOGLE_DRIVE_FILE_ID")
 
 	// Start Discord bot
@@ -50,7 +51,9 @@ func main() {
 	}
 
 	client := getClient(config)
-	srv, err := drive.New(client)
+	// srv, err := drive.New(client)
+	ctx := context.Background()
+	srv, err := drive.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
 		log.Fatalf("Unable to retrieve Drive client: %v", err)
 	}
@@ -75,13 +78,11 @@ func main() {
 		if modifiedTime.After(lastModifiedTime) {
 			lastModifiedTime = modifiedTime
 
-			fmt.Printf("Novo APK disponivel!\n[Link Acesso](https://drive.google.com/file/d/1-C8KRfua1gqy-wj81e9oTyeWmzYO6oS3/view?usp=sharing)")
-
-			// message := fmt.Sprintf("O documento foi atualizado em: %s", modifiedTime)
-			// _, err := dg.ChannelMessageSend(discordChannelID, message)
-			// if err != nil {
-			// 	log.Printf("Unable to send message to Discord: %v", err)
-			// }
+			message := fmt.Sprintf("Novo APK disponivel!\n[Link Acesso](https://drive.google.com/file/d/1-C8KRfua1gqy-wj81e9oTyeWmzYO6oS3/view?usp=sharing)")
+			_, err := dg.ChannelMessageSend(discordChannelID, message)
+			if err != nil {
+				log.Printf("Unable to send message to Discord: %v", err)
+			}
 		}
 		time.Sleep(5 * time.Second)
 	}
